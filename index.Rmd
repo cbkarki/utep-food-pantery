@@ -3,12 +3,9 @@ title: "Exploring Food Pantry Data, UTEP (2022)"
 #author: "chitra karki"
 date: '`r Sys.Date()`'
 output:
-  html_document:
-    df_print: paged
-editor_options: 
-  chunk_output_type: console
-  toc: yes
-  toc_float: yes
+    html_document:
+        toc: true
+        toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -24,7 +21,8 @@ library(plotly)
 ```
 
 
-#### 1) How is use of government federal aid/assistance associated with food insecurity as measured by the USDA index or categories?
+### Research Question 1
+#### How is use of government federal aid/assistance associated with food insecurity as measured by the USDA index or categories?
 
 Below are the bar graphs and the donuts charts to demostrate the different levels of food insecurity among the students receiving various Federal Aids in the year 2022.The graphs are interactive and can be changed to different year from the horizontal year bar.
 
@@ -76,7 +74,8 @@ dc = billboarder() %>%
 hw_grid(hc, dc, ncol = 2)
 ```
 
-#### 2) Does food insecurity (as measured by USDA index or categories) have a relationship with the items pertaining to concentration on school and degree progress/completion?
+### Research Question 2
+#### Does food insecurity (as measured by USDA index or categories) have a relationship with the items pertaining to concentration on school and degree progress/completion?
 
 Graphs below shows the relations between food insecurity, students concentration and the progress towards degree completion.
 
@@ -126,11 +125,12 @@ hw_grid(hc2,dc2,ncol = 2)
 ```
 
 
-#### 3) Are there gender or ethnicity differences in the items pertaining to concentration on school and degree progress/completion?
+### Research Question 3
+#### Are there gender or ethnicity differences in the items pertaining to concentration on school and degree progress/completion?
 
 Graphs below show the relationship between Gender, students concentration and the progress towards degree completion
 
-The number of female students who are delaying graduation are high in number in comparision to other genders. Females who thing almost every day about delaying and delayed in actual are a bit higher in comparision to others.
+The number of female students who are delaying graduation are high in number in comparison to other genders. Females who thing almost every day about delaying and delayed in actual are a bit higher in comparison to others.
 
 
 
