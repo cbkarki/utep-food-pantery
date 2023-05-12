@@ -1,0 +1,179 @@
+---
+title: "Exploring Food Pantry Data, UTEP (2022)"
+#author: "chitra karki"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+  toc: yes
+  toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library("tidyverse")
+library(highcharter) 
+library("billboarder")
+library(ggpubr)
+library(webr)
+library(plotly)
+ library(dplyr) 
+```
+
+
+#### 1) How is use of government federal aid/assistance associated with food insecurity as measured by the USDA index or categories?
+
+Below are the bar graphs and the donuts charts to demostrate the different levels of food insecurity among the students receiving various Federal Aids in the year 2022.The graphs are interactive and can be changed to different year from the horizontal year bar.
+
+Among the participents of the survey, 54.7 % of students work and study. Simillarly, 28.1% student are getting loans, 12.5% students received scholarship and 4.7% students applied for emergency loans. In every group of students receiving Federal Aid, majory of the students have food insecurity leve either very low or low. only few students in each group have marginal food insecurity.Among the students, work study group, there are more number of students with marginal food insecurity.
+
+
+```{r echo=FALSE}
+dat = read.csv(file = "C:/Users/chitr/OneDrive - University of Texas at El Paso/data_science/semesters/sem5-spring-2023/data visualization/final-project/master.csv",header = T)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+hc <- dat %>% 
+    filter(Year=="2022") %>% 
+    select(FedAid,index) %>% 
+    drop_na() %>%  
+    filter(FedAid != "UTEP's COVID CARES Act Fund" & FedAid != "Other") %>% 
+    group_by(FedAid) %>% 
+    mutate(Index = ifelse(index==0|index==1,"Mariginal",ifelse(index==5|index==6,"Very Low","Low"))) %>%  select(FedAid,Index) %>% 
+    table()  %>%   
+    as.data.frame() %>% arrange(desc(Freq)) %>% 
+    hchart('column', hcaes(x = 'FedAid', y = 'Freq', group = 'Index')) %>%  hc_legend(
+    align = "right",
+    verticalAlign = "bottom",
+    layout = "vertical"
+    ) %>% hc_xAxis(title = list(text="Federal Aid")) %>% hc_yAxis(title = list(text="#. of Students")) %>% hc_title(text = "Food Security levels in students Vs Federal Aids (Year:2022)")
+    
+ #   hc
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+donut = dat %>% 
+    filter(Year=="2022") %>% 
+    select(FedAid,index) %>% 
+    drop_na() %>%  
+    filter(FedAid != "UTEP's COVID CARES Act Fund" & FedAid != "Other") %>% 
+    group_by(FedAid) %>% 
+    mutate(Index = ifelse(index==0|index==1,"Mariginal",ifelse(index==5|index==6,"Very Low","Low"))) %>%  select(FedAid) %>% table() %>% data.frame()
+    #ggdonutchart("Freq", label = "FedAid",
+     # fill = "FedAid", color = "white") %>% 
+
+
+dc = billboarder() %>% 
+   bb_donutchart(data = donut,title="Federal Aids 2022") %>% bb_legend(show = TRUE)
+
+#par(mfrow = c(1,2))
+
+#dc
+hw_grid(hc, dc, ncol = 2)
+```
+
+#### 2) Does food insecurity (as measured by USDA index or categories) have a relationship with the items pertaining to concentration on school and degree progress/completion?
+
+Graphs below shows the relations between food insecurity, students concentration and the progress towards degree completion.
+
+There are 152 students who have delayed graduation by 2 semester or more and 144 students delayed by 1 semester. No mater, students belonging to low,marginal or very low food insecurity, think of delaying the graduation and they do delay. Majority of the students who delayed think almost every day of delaying belong to the very low food insecurity group. It is intersting to observe that even the students who never think of delaying are delaying their graduation. There could other reason not associated with the food insecurity.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+q1 =   dat %>% 
+    filter(Year=="2022") %>% 
+    select(FedAid,index,RespondentId,Gender)
+dat2 = read.csv(file = "C:/Users/chitr/OneDrive - University of Texas at El Paso/data_science/semesters/sem5-spring-2023/data visualization/final-project/extra_questions_withID.csv",header = T)
+ q2 = dat2 %>% 
+    select(RespondentId,DiffConcentrate,DelayComplDegree)
+ 
+ 
+inner_join(q1,q2,"RespondentId") %>% 
+    select(-RespondentId) %>% 
+    drop_na() %>%
+    mutate(Index = ifelse(index==0|index==1,"Mariginal",
+                          ifelse(index==5|index==6,"Very Low","Low"))) %>% 
+    select(Index,DiffConcentrate,DelayComplDegree)-> sankey2
+    #group_by(Index,DiffConcentrate,DelayComplDegree)  
+
+
+ hc2 = hchart(data_to_sankey(sankey2),type = "sankey")
+
+  ###############
+    
+ 
+ inner_join(q1,q2,"RespondentId") %>% 
+    select(-RespondentId) %>% 
+    drop_na() %>%
+    mutate(Index = ifelse(index==0|index==1,"Mariginal",
+                          ifelse(index==5|index==6,"Very Low","Low"))) %>% 
+    select(Index,DiffConcentrate,DelayComplDegree) %>% 
+    group_by(Index,DiffConcentrate,DelayComplDegree) %>% 
+    summarise(n=n()) -> piedo2
+
+    
+dout2 = data_to_hierarchical(piedo2,c(Index,DiffConcentrate,DelayComplDegree),n) 
+
+dc2 = hchart(dout2,type="sunburst")
+
+hw_grid(hc2,dc2,ncol = 2)
+
+
+```
+
+
+#### 3) Are there gender or ethnicity differences in the items pertaining to concentration on school and degree progress/completion?
+
+Graphs below show the relationship between Gender, students concentration and the progress towards degree completion
+
+The number of female students who are delaying graduation are high in number in comparision to other genders. Females who thing almost every day about delaying and delayed in actual are a bit higher in comparision to others.
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+q3 = dat2 %>% 
+    select(RespondentId,DiffConcentrate)
+gend = c("Female","Male","transgender","Gender variant","other","Prefere not to say")
+
+inner_join(q1,q2,"RespondentId") %>%
+    #select(FedAid,Gender,DiffConcentrate) %>% 
+    filter(FedAid != "UTEP's COVID CARES Act Fund" & FedAid != "Other") %>% 
+    mutate(Index = ifelse(index==0|index==1,"Mariginal",ifelse(index==5|index==6,"Very Low","Low"))) %>% rename(Gen=Gender) %>% 
+    mutate(Gender = gend[as.numeric(Gen)] ) %>% 
+    select(Gender,DiffConcentrate,DelayComplDegree) -> sankey3
+
+hc3 = hchart(data_to_sankey(sankey3),type = "sankey") %>% hc_xAxis(title = list(text = "Sankey Chart"))
+
+##########################
+inner_join(q1,q2,"RespondentId") %>%
+    #select(FedAid,Gender,DiffConcentrate) %>% 
+    filter(FedAid != "UTEP's COVID CARES Act Fund" & FedAid != "Other") %>% 
+    mutate(Index = ifelse(index==0|index==1,"Mariginal",ifelse(index==5|index==6,"Very Low","Low"))) %>% rename(Gen=Gender) %>% 
+    mutate(Gender = gend[as.numeric(Gen)] ) %>% 
+    group_by(Gender,DiffConcentrate,DelayComplDegree) %>% 
+    summarise(n=n())-> piedo3
+
+dout3 = data_to_hierarchical(piedo3,c(Gender,DiffConcentrate,DelayComplDegree),n) 
+
+#hchart(dout3,type="sunburst")
+
+#############################################
+ggp = inner_join(q1,q2,"RespondentId") %>%
+    #select(FedAid,Gender,DiffConcentrate) %>% 
+    filter(FedAid != "UTEP's COVID CARES Act Fund" & FedAid != "Other") %>% 
+    mutate(Index = ifelse(index==0|index==1,"Mariginal",ifelse(index==5|index==6,"Very Low","Low"))) %>% rename(Gen=Gender) %>% 
+    mutate(Gender = gend[as.numeric(Gen)] ) %>% data.frame() %>% drop_na() %>% 
+  ggplot(aes(x=DelayComplDegree,fill=Gender))+
+  geom_bar(stat = "count",
+           position = position_dodge( preserve = "single")) +
+  facet_grid(DiffConcentrate~.) + theme_gray() + labs(y="#. of Students") + theme(legend.title = element_blank())
+
+
+par(mfrow=c(1,2))
+hc3;ggp
+
+```
