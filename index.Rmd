@@ -1,9 +1,10 @@
 ---
 title: "Exploring Food Pantry Data, UTEP (2022)"
 #author: "chitra karki"
-date: '`r Sys.Date()`'
+#date: '`r Sys.Date()`'
 output:
     html_document:
+        theme: cerulean
         toc: true
         toc_float: true
 ---
@@ -26,7 +27,7 @@ library(plotly)
 
 Below are the bar graphs and the donuts charts to demostrate the different levels of food insecurity among the students receiving various Federal Aids in the year 2022.The graphs are interactive and can be changed to different year from the horizontal year bar.
 
-Among the participents of the survey, 54.7 % of students work and study. Simillarly, 28.1% student are getting loans, 12.5% students received scholarship and 4.7% students applied for emergency loans. In every group of students receiving Federal Aid, majory of the students have food insecurity leve either very low or low. only few students in each group have marginal food insecurity.Among the students, work study group, there are more number of students with marginal food insecurity.
+Among the participants of the survey, 54.7 % of students work and study. Similarly, 28.1% student are getting loans, 12.5% students received scholarship and 4.7% students applied for emergency loans. In every group of students receiving Federal Aid, majority of the students have food insecurity level either very low or low. only few students in each group have marginal food insecurity.Among the students, work study group, there are more number of students with marginal food insecurity.
 
 
 ```{r echo=FALSE}
@@ -71,7 +72,8 @@ dc = billboarder() %>%
 #par(mfrow = c(1,2))
 
 #dc
-hw_grid(hc, dc, ncol = 2)
+#hw_grid(hc, dc, ncol = 2)
+hc;dc
 ```
 
 ### Research Question 2
@@ -79,7 +81,7 @@ hw_grid(hc, dc, ncol = 2)
 
 Graphs below shows the relations between food insecurity, students concentration and the progress towards degree completion.
 
-There are 152 students who have delayed graduation by 2 semester or more and 144 students delayed by 1 semester. No mater, students belonging to low,marginal or very low food insecurity, think of delaying the graduation and they do delay. Majority of the students who delayed think almost every day of delaying belong to the very low food insecurity group. It is intersting to observe that even the students who never think of delaying are delaying their graduation. There could other reason not associated with the food insecurity.
+There are 152 students who have delayed graduation by 2 semester or more and 144 students delayed by 1 semester. No mater, students belonging to low,marginal or very low food insecurity, think of delaying the graduation and they do delay. Majority of the students who delayed think almost every day of delaying belong to the very low food insecurity group. It is interesting to observe that even the students who never think of delaying are delaying their graduation. There could other reason not associated with the food insecurity.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -119,8 +121,8 @@ dout2 = data_to_hierarchical(piedo2,c(Index,DiffConcentrate,DelayComplDegree),n)
 
 dc2 = hchart(dout2,type="sunburst")
 
-hw_grid(hc2,dc2,ncol = 2)
-
+#hw_grid(hc2,dc2,ncol = 2)
+hc2;dc2
 
 ```
 
@@ -172,8 +174,8 @@ ggp = inner_join(q1,q2,"RespondentId") %>%
            position = position_dodge( preserve = "single")) +
   facet_grid(DiffConcentrate~.) + theme_gray() + labs(y="#. of Students") + theme(legend.title = element_blank())
 
-
-par(mfrow=c(1,2))
+#ggplotly(ggp)
+#hw_grid(hc3,ggplotly(ggp))
+par(mfrow = c(1,2))
 hc3;ggp
-
 ```
