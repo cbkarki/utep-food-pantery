@@ -176,6 +176,9 @@ ggp = inner_join(q1,q2,"RespondentId") %>%
 
 #ggplotly(ggp)
 #hw_grid(hc3,ggplotly(ggp))
-par(mfrow = c(1,2))
-hc3;ggp
+#par(mfrow = c(1,2))
+hc3;#ggp#ggplotly(ggp)
+
+ggplotly(ggp) %>%
+layout(legend = list(orientation = "v", x = 1.05, y =0.5))
 ```
